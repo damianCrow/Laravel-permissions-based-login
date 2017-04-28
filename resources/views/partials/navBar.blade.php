@@ -15,27 +15,27 @@
           <li @if (Route::current()->uri() === "dashboard") class="active" @endif>
             <a href="{{ route('dashboard') }}"> Home </a>
           </li>
-          <!-- <li @if (strpos($_SERVER['REQUEST_URI'], "user") !== false) class="active" @endif>
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> user
+          <li @if (strpos($_SERVER['REQUEST_URI'], "content") !== false) class="active" @endif>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Content
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a tabindex="-1" href="{{ URL::to('user/create') }}"> Create New user </a></li>
-              <li><a tabindex="-1" href="{{ URL::to('user') }}"> Run, Edit Or Delete user </a></li>
+              <li><a tabindex="-1" href="{{ URL::to('content/create') }}"> Create New Content Folder </a></li>
+              <li><a tabindex="-1" href="{{ URL::to('content') }}"> View, Edit Or Delete Content Folders </a></li>
             </ul>
           </li>
-          <li @if (strpos($_SERVER['REQUEST_URI'], "theme") !== false) class="active" @endif>
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Theme
+          <li @if (strpos($_SERVER['REQUEST_URI'], "group") !== false) class="active" @endif>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Groups
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a tabindex="-1" href="{{ URL::to('theme/create') }}"> Create New Theme </a></li>
-              <li><a tabindex="-1" href="{{ URL::to('theme') }}"> Preview, Edit Or Delete Theme </a></li>
+              <li><a tabindex="-1" href="{{ URL::to('group/create') }}"> Create New Group </a></li>
+              <li><a tabindex="-1" href="{{ URL::to('group') }}"> View, Edit Or Delete Groups </a></li>
             </ul>
-          </li> -->
+          </li>
           <li @if (strpos($_SERVER['REQUEST_URI'], "user") !== false) class="active" @endif>
 
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Account
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Users
               <span class="caret"></span>
             </a>
 
@@ -45,12 +45,12 @@
 
               @if (Auth::user()->isAdmin())
                 <li><a tabindex="-1" href="{{ URL::to('user/create') }}"> Add A New User </a></li>
-                <li><a tabindex="-1" href="{{ URL::to('user') }}"> Edit Or Delete User </a></li>
+                <li><a tabindex="-1" href="{{ URL::to('user') }}"> View, Edit Or Delete Users </a></li>
               @endif
             </ul> 
           </li>
           <li>
-            <a href="{{ url('/') }}" class="btn-info" role="button"> Sign Out </a>
+            <a href="{{ url('/signout') }}" class="btn-info" role="button"> Sign Out </a>
           </li>
         </ul>
 

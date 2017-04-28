@@ -37,7 +37,7 @@
         <select id="groups" name="groups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
 
           @foreach($groups as $group)
-            <option value="{{$group}}"> {{$group}} </option>
+            <option value="{{$group->name}}"> {{$group->name}} </option>
           @endforeach
         </select>
 
@@ -45,7 +45,7 @@
 
       <div class="form-group" style="margin-top: 15px;">
         <label for="admin"> Make User Admin </label>
-        <input class="" id="admin" type="checkbox" name="admin"> 
+        <input id="admin" type="checkbox" name="admin"> 
       </div>
 
       <button type="submit" class="btn btn-primary"> Submit </button>
@@ -56,5 +56,6 @@
 @endsection
 
 @section('scripts')
-
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
 @endsection

@@ -11,12 +11,15 @@
 |
 */
 
-Route::get('/', function(Request $request) {
-
-  Auth::logout();
+Route::get('/', function () {
 
   return view('welcome');
 });
+
+Route::get('/signout', [
+	'uses' => 'userController@signOut',
+  'as' => 'signout'  
+]);
 
 Route::post('/signin', [
   'uses' => 'userController@signIn',
@@ -25,8 +28,9 @@ Route::post('/signin', [
 
 Route::get('/dashboard', [
 	'uses' => 'userController@dashboard',
-	'as' => 'dashboard',
-	'middleware' => 'auth'
+	'as' => 'dashboard'
 ]);
   
 Route::resource('user', 'userController');
+Route::resource('content', 'contentController');
+Route::resource('group', 'groupController');

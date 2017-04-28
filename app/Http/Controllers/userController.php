@@ -1,12 +1,14 @@
 <?php 
 
 	namespace App\Http\Controllers;
-	use Request;
+	use Illuminate\Http\Request;
+	use Illuminate\Support\Facades\Request as RequestInput;
 	use App\User;
 	use Illuminate\Support\Facades\Auth;
 	use Session;
 	use View;	
 	use Validator;
+	use App\Group;
 
 	class userController extends Controller {	
 
@@ -43,6 +45,13 @@
 			}
 		}
 
+		public function signOut(Request $request) {
+
+			Auth::logout();
+			Session::forget();
+  		return view('/');
+  	}
+
 		public function index() {
 
       $users = User::all();
@@ -53,7 +62,7 @@
 
     public function create() {
 
-    	$groups = json_decode(file_get_contents(storage_path() . "/json/groups.json"), true);
+    	$groups = Group::all();
     	return view('userCreate') ->with('groups', $groups);
     }
 
@@ -94,7 +103,7 @@
     
     public function edit($id) {
 
-    	$groups = json_decode(file_get_contents(storage_path() . "/json/groups.json"), true);
+    	$groups = Group::all();
     	$user = User::find($id);
     	$userGroups = json_decode($user->groups);
 
@@ -108,7 +117,7 @@
 
     public function update($id) {
 
-			$request = Request::all();
+			$request = RequestInput::all();
 			$user = User::find($id);
 
 			$rules = [

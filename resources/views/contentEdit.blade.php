@@ -16,7 +16,7 @@
   	  </ul>
   	@endif
 
-  	{{ Form::model($user, array('route' => array('user.update', $user->id), 'method' => 'PUT')) }}
+  	{{ Form::model($content, array('route' => array('user.update', $content->id), 'method' => 'PUT')) }}
 
       <div class="form-group {{ $errors -> has('email') ? 'has-error' : ''}}">
         <label for="email"> Enter Email </label>
@@ -30,7 +30,7 @@
         <select id="groups" name="groups[]" class="form-control selectpicker show-tick" value="{{ Request::old('')}}" multiple>
 
          @if(Auth::user()->isAdmin())
-            @foreach($groups as $group)
+            @foreach($groups->name as $group)
               
               <option value="{{$group->name}}"> {{$group->name}}</option>
             @endforeach
@@ -38,7 +38,7 @@
           @else
             @foreach($userGroups as $group)
 
-              <option value="{{$group}}" disabled>{{$group}} </option>
+              <option value="{{$group->name}}" disabled>{{$group->name}} </option>
             @endforeach
           @endif
 
