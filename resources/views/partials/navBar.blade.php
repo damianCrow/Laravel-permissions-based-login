@@ -11,11 +11,11 @@
 
       @if (Route::current()->uri() !== '/')
 
-        <!-- <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-right">
           <li @if (Route::current()->uri() === "dashboard") class="active" @endif>
             <a href="{{ route('dashboard') }}"> Home </a>
           </li>
-          <li @if (strpos($_SERVER['REQUEST_URI'], "user") !== false) class="active" @endif>
+          <!-- <li @if (strpos($_SERVER['REQUEST_URI'], "user") !== false) class="active" @endif>
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"> user
               <span class="caret"></span>
             </a>
@@ -50,7 +50,7 @@
             </ul> 
           </li>
           <li>
-            <a href="{{ url('/') }}" class="btn-default btn-default" role="button"> Sign Out </a>
+            <a href="{{ url('/') }}" class="btn-info" role="button"> Sign Out </a>
           </li>
         </ul>
 

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Session;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -46,5 +47,17 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         return parent::render($request, $e);
+    }
+
+    protected function unauthenticated($request, Exception $e)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+
+            return response('Unauthorized.', 401);
+        } else {
+
+            Session::flash('message', 'Please Sign In.');
+            return redirect()->guest('/');
+        }
     }
 }

@@ -29,15 +29,19 @@
 
         <select id="groups" name="groups[]" class="form-control selectpicker show-tick" value="{{ Request::old('')}}" multiple>
 
-          @foreach($groups as $group)
-            @foreach($userGroups as $selectedGroups)
-              @if($group === $selectedGroups)
-              <option value="{{$group}}" class="selected"> {{$group}}</option>
-              @else
+         @if(Auth::user()->isAdmin())
+            @foreach($groups as $group)
               
-               @endif
+              <option value="{{$group}}"> {{$group}}</option>
             @endforeach
-          @endforeach
+
+          @else
+            @foreach($userGroups as $group)
+
+              <option value="{{$group}}" disabled>{{$group}} </option>
+            @endforeach
+          @endif
+
 
         </select>
 
@@ -63,4 +67,10 @@
 @section('scripts')
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+
+  <script type="text/javascript">
+
+    $('#groups').selectpicker('val', {!! $user->groups !!});
+  </script>
+
 @endsection

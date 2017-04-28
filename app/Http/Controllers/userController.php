@@ -1,12 +1,11 @@
 <?php 
 
 	namespace App\Http\Controllers;
-	use Illuminate\Http\Request;
+	use Request;
 	use App\User;
 	use Illuminate\Support\Facades\Auth;
 	use Session;
-	use View;
-	use Input;	
+	use View;	
 	use Validator;
 
 	class userController extends Controller {	
@@ -109,16 +108,15 @@
 
     public function update($id) {
 
-			$request = Input::all();
+			$request = Request::all();
 			$user = User::find($id);
 
 			$rules = [
 				'email' => 'required|email|unique:users,email,'. $id,
-				'groups' => 'required|array,' .$id,
+				'groups' => 'required|array',
 			];
             
       $validator = Validator::make($request, $rules);
-
 
       if(array_key_exists('admin', $request)) {
 
@@ -130,8 +128,8 @@
 			}
 
 			$email = $request['email'];
-			$username = $request['username'];
-			$password = bcrypt($request['password']);
+			$groups = json_encode($request['groups']);
+			// $password = bcrypt($request['password']);
 			$admin = $userIsAdmin;
 
 
@@ -148,13 +146,13 @@
       else {
          
 				$user -> email = $email;
-				$user -> username = $username;
-				$user -> password = $password;
+				$user -> groups = $groups;
+				// $user -> password = $password;
 				$user -> admin = $userIsAdmin;
 
 				$user -> save();
 
-        Session::flash('message', 'You have successfully updated the user information.');
+        Session::flash('message', 'You have successfully updated the information for user: ' . $email);
 
         return redirect() -> action('userController@index');
       }
@@ -165,7 +163,7 @@
     	$user = User::find($id);
       $user -> delete();
 
-      Session::flash('message', 'You have successfully deleted this user!');
+      Session::flash('message', 'You have successfully deleted the user: ' . $user['email']);
 
       return redirect() -> action('userController@index');
     }
