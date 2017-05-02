@@ -4,7 +4,7 @@
 
   <div class="col-md-6 col-md-offset-3">
 
-  	<h1>Edit Account</h1>
+  	<h1>Edit {{$content->name}}</h1>
 
   	</br>
 
@@ -16,43 +16,51 @@
   	  </ul>
   	@endif
 
-  	{{ Form::model($content, array('route' => array('user.update', $content->id), 'method' => 'PUT')) }}
+  	{{ Form::model($content, array('route' => array('content.update', $content->id), 'method' => 'PUT')) }}
 
-      <div class="form-group {{ $errors -> has('email') ? 'has-error' : ''}}">
-        <label for="email"> Enter Email </label>
-        <input id="email" class="form-control" type="text" name="email" value="@if(isset($request)) {{ $request['email'] }} @else {{ $user['email'] }} @endif">
+      <div class="form-group {{ $errors -> has('name') ? 'has-error' : ''}}">
+        <label for="name"> Edit Folder Name </label>
+        <input id="name" class="form-control" type="text" name="name" value="@if(isset($request)) {{ $request['name'] }} @else {{ $content['name'] }} @endif">
       </div>
 
-      <div class="input-group col-lg-offset-1 col-lg-3 col-sm-6 {{ $errors -> has('groups') ? 'has-error' : ''}}">
+      @if (Auth::user()->isAdmin())
+        <div class="form-group" style="margin-top: 15px;">
 
-        <label class="block" for="groups[]"> Select Groups </label>
+          <label for="admin"> Folder Is Admin Acces Only </label>
+          <input id="admin" type="checkbox" name="admin" @if(isset($request['admin_access_only'])) checked @elseif($content['admin_access_only'] === 1) checked @endif> 
+        </div>
+      @endif
 
-        <select id="groups" name="groups[]" class="form-control selectpicker show-tick" value="{{ Request::old('')}}" multiple>
+      <div class="input-group {{ $errors -> has('accessGroups') ? 'has-error' : ''}}">
+
+        <label class="block" for="accessGroups[]"> Edit Content Folder Access Groups </label>
+
+        <select id="accessGroups" name="accessGroups[]" class="form-control selectpicker show-tick" value="{{ Request::old('')}}" multiple>
 
          @if(Auth::user()->isAdmin())
-            @foreach($groups->name as $group)
+            @foreach($groups as $group)
               
               <option value="{{$group->name}}"> {{$group->name}}</option>
-            @endforeach
-
-          @else
-            @foreach($userGroups as $group)
-
-              <option value="{{$group->name}}" disabled>{{$group->name}} </option>
-            @endforeach
+            @endforeach  
           @endif
-
 
         </select>
 
       </div>
 
-      <div class="form-group" style="margin-top: 15px;">
+      <div id="editGroupsWrrpper" class="input-group form-group {{ $errors -> has('editGroups') ? 'has-error' : ''}}">
 
-        @if (Auth::user()->isAdmin())
-          <label for="admin"> Make Admin User </label>
-          <input id="admin" type="checkbox" name="admin" @if(isset($request['admin'])) checked @elseif($user['admin'] === 1) checked @endif> 
-        @endif 
+        <label class="block" for="editGroups[]"> Select Content Folder Edit Access Groups </label>
+
+        <select id="editGroups" name="editGroups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
+
+          @if(Auth::user()->isAdmin())
+            @foreach($groups as $group)
+
+              <option value="{{$group->name}}"> {{$group->name}} </option>
+            @endforeach
+          @endif
+        </select>
 
       </div>
 
@@ -70,7 +78,8 @@
 
   <script type="text/javascript">
 
-    $('#groups').selectpicker('val', {!! $user->groups !!});
+    $('#accessGroups').selectpicker('val', {!! $content->access_groups !!});
+    $('#editGroups').selectpicker('val', {!! $content->edit_access_groups !!});
   </script>
 
 @endsection

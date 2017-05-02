@@ -30,11 +30,11 @@
         <input id="admin_access_only" type="checkbox" name="admin_access_only"> 
       </div>
 
-      <div id="accessGroupsWrrpper" class="input-group form-group col-lg-offset-1 col-lg-3 col-sm-6 {{ $errors -> has('groups') ? 'has-error' : ''}}">
+      <div id="accessGroupsWrrpper" class="input-group form-group {{ $errors -> has('accessGroups') ? 'has-error' : ''}}">
 
-        <label class="block" for="groups[]"> Select Content Folder Access Groups </label>
+        <label class="block" for="accessGroups[]"> Select Content Folder Access Groups </label>
 
-        <select id="accessGroups" name="groups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
+        <select id="accessGroups" name="accessGroups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
 
           @foreach($groups as $group)
             <option value="{{$group->name}}"> {{$group->name}} </option>
@@ -43,11 +43,11 @@
 
       </div>
 
-      <div id="editGroupsWrrpper" class="input-group form-group col-lg-offset-1 col-lg-3 col-sm-6 {{ $errors -> has('groups') ? 'has-error' : ''}}">
+      <div id="editGroupsWrrpper" class="input-group form-group {{ $errors -> has('editGroups') ? 'has-error' : ''}}">
 
-        <label class="block" for="groups[]"> Select Content Folder Edit Access Groups </label>
+        <label class="block" for="editGroups[]"> Select Content Folder Edit Access Groups </label>
 
-        <select id="editGroups" name="groups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
+        <select id="editGroups" name="editGroups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
 
           @foreach($groups as $group)
             <option value="{{$group->name}}"> {{$group->name}} </option>
@@ -65,14 +65,22 @@
 
 @section('scripts')
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+
   <script type="text/javascript">
 
     $(document).ready(function() {
+
+      // if($('#admin_access_only').checked) {
+        
+      //   $('#editGroupsWrrpper, #accessGroupsWrrpper').hide();
+      // }
 
       $('#admin_access_only').on('change', function() {
         
         if(this.checked) {
 
+          $('#editGroups, #accessGroups').selectpicker('selectAll');
           $('#editGroupsWrrpper, #accessGroupsWrrpper').hide();
         }
         else {
@@ -84,5 +92,4 @@
 
   </script>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
 @endsection

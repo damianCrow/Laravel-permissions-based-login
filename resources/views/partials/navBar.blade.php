@@ -20,8 +20,12 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a tabindex="-1" href="{{ URL::to('content/create') }}"> Create New Content Folder </a></li>
-              <li><a tabindex="-1" href="{{ URL::to('content') }}"> View, Edit Or Delete Content Folders </a></li>
+              @if(Auth::user()->isAdmin())
+                <li><a tabindex="-1" href="{{ URL::to('content/create') }}"> Create New Content Folder </a></li>
+                <li><a tabindex="-1" href="{{ URL::to('content') }}"> View, Edit Or Delete Content Folders </a></li>
+              @else
+                <li><a tabindex="-1" href="{{ URL::to('content') }}"> View Content Folders </a></li>
+              @endif
             </ul>
           </li>
           <li @if (strpos($_SERVER['REQUEST_URI'], "group") !== false) class="active" @endif>
@@ -29,8 +33,12 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a tabindex="-1" href="{{ URL::to('group/create') }}"> Create New Group </a></li>
-              <li><a tabindex="-1" href="{{ URL::to('group') }}"> View, Edit Or Delete Groups </a></li>
+              @if(Auth::user()->isAdmin())
+                <li><a tabindex="-1" href="{{ URL::to('group/create') }}"> Create New Group </a></li>
+                <li><a tabindex="-1" href="{{ URL::to('group') }}"> View, Edit Or Delete Groups </a></li>
+              @else
+                <li><a tabindex="-1" href="{{ URL::to('group') }}"> View Groups </a></li>
+              @endif
             </ul>
           </li>
           <li @if (strpos($_SERVER['REQUEST_URI'], "user") !== false) class="active" @endif>
@@ -40,10 +48,9 @@
             </a>
 
             <ul class="dropdown-menu">
-            
               <li><a tabindex="-1" href="{{ URL::to('user/' . Auth::user()->id . '/edit') }}"> Edit My Account </a></li>
 
-              @if (Auth::user()->isAdmin())
+              @if(Auth::user()->isAdmin())
                 <li><a tabindex="-1" href="{{ URL::to('user/create') }}"> Add A New User </a></li>
                 <li><a tabindex="-1" href="{{ URL::to('user') }}"> View, Edit Or Delete Users </a></li>
               @endif

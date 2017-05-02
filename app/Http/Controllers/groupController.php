@@ -50,23 +50,25 @@
 
 			$group -> save();
 
-			Session::flash('message', 'You have successfully created a new group.');
+			Session::flash('message', 'You have successfully created a new group called: ' . $name . '.');
 
 			return redirect() -> action('groupController@index');
 		}
     
     public function edit($id) {
 
-    	$groups = Group::all();
+    	$group = Group::find($id);
 
-    	return View::make('userEdit')
-        ->with('groups', $groups);
+    	return View::make('groupEdit')
+        ->with('group', $group);
     }
 
     public function update($id) {
 
 			$request = RequestInput::all();
 			$group = Group::find($id);
+      $users = User::all();
+      $contents = Content::all();
 
 			$rules = [
 				'name' => 'required|unique:groups,name,'. $id
@@ -88,8 +90,11 @@
       } 
       else {
          
-				$group -> name = $name;
+        $this->updateDbRows($users, $group, 'groups', 'name', 'change', $name);
+        $this->updateDbRows($contents, $group, 'access_groups', 'name', 'change', $name);
+        $this->updateDbRows($contents, $group, 'edit_access_groups', 'name', 'change', $name);
 
+				$group -> name = $name;
 				$group -> save();
 
         Session::flash('message', 'You have successfully updated the information for group: ' . $name);
@@ -101,28 +106,44 @@
     public function destroy($id) {
 
     	$group = Group::find($id);
-    	$users = User::all();
+      $users = User::all();
+      $contents = Content::all();
 
-    	foreach($users as $user) {
-
-    		$userGroupsArray = json_decode($user -> groups);
-
-    		foreach($userGroupsArray as $key => $userGroup) {
-
-    			if(($key = array_search($group -> name, $userGroupsArray)) !== false) {
-
-						unset($userGroupsArray[$key]);
-						$user -> groups = json_encode($userGroupsArray);
-    				$user -> save();
-					} 						
-    		}
-    	}
+      $this->updateDbRows($users, $group, 'groups', 'name', 'delete', null);
+      $this->updateDbRows($contents, $group, 'access_groups', 'name', 'delete', null);
+      $this->updateDbRows($contents, $group, 'edit_access_groups', 'name', 'delete', null);
 
       $group -> delete();
 
       Session::flash('message', 'You have successfully deleted the group: ' . $group['name']);
 
       return redirect() -> action('groupController@index');
+    }
+
+    public function updateDbRows($table, $selectedRow, $column, $property, $updateType, $newValue) {
+ 
+      foreach($table as $row) {
+
+        $relevantArray = json_decode($row -> $column);
+
+        foreach($relevantArray as $key => $value) {
+
+          if(($key = array_search($selectedRow -> $property, $relevantArray)) !== false) {
+
+            if($updateType === 'delete') {
+
+              unset($relevantArray[$key]);
+            }
+            if($updateType === 'change') {
+              
+              $relevantArray[$key] = $newValue;
+            }
+            
+            $row -> $column = json_encode($relevantArray);
+            $row -> save();
+          }             
+        }
+      }
     }
 	}
 ?>

@@ -3,8 +3,9 @@
 	namespace App\Http\Controllers;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Request as RequestInput;
-	use App\Content;
 	use Illuminate\Support\Facades\Auth;
+	use Illuminate\Support\Facades\File;
+	use App\Content;
 	use Session;
 	use View;	
 	use App\Group;
@@ -34,118 +35,131 @@
     public function create() {
 
     	$groups = Group::all();
-    	return view('contentCreate') ->with('groups', $groups);
+    	return view('contentCreate') -> with('groups', $groups);
     }
 
-  //   public function store(Request $request) {
+    public function store(Request $request) {
 
-		// 	$this -> validate($request, [
-		// 		'email' => 'required|email|unique:users',
-		// 		'groups' => 'required|array',
-		// 		'password' => 'required|min:6'
-		// 	]);
+			$this -> validate($request, [
+				'name' => 'required|unique:contents|min:6|alpha_dash',
+				'editGroups' => 'required|array',
+				'accessGroups' => 'required|array'
+			]);
 
-		// 	if($request['admin']) {
+			$name = $request['name'];
 
-		// 	  $userIsAdmin = true;
-		// 	}
-		// 	else {
+			if(!File::exists(storage_path() . '/' . $request['name'])) {
 
-		// 	  $userIsAdmin = false;  
-		// 	}
+    		File::makeDirectory(storage_path() . '/' . $request['name']);
 
-		// 	$email = $request['email'];
-		// 	$groups = json_encode($request['groups']);
-		// 	$password = bcrypt($request['password']);
-		// 	$admin = $userIsAdmin;
+				if($request['admin_access_only']) {
 
-		// 	$user = new User();
-		// 	$user -> email = $email;
-		// 	$user -> groups = $groups;
-		// 	$user -> password = $password;
-		// 	$user -> admin = $userIsAdmin;
+				  $AdminAccessOnly = true;
+				}
+				else {
 
-		// 	$user -> save();
+				  $AdminAccessOnly = false;  
+				}
 
-		// 	Session::flash('message', 'You have successfully created a new user.');
+				$editGroups = json_encode($request['editGroups']);
+				$accessGroups = json_encode($request['accessGroups']);
 
-		// 	return redirect() -> action('userController@index');
-		// }
+				$content = new Content();
+				$content -> name = $name;
+				$content -> access_groups = $accessGroups;
+				$content -> edit_access_groups = $editGroups;
+				$content -> admin_access_only = $AdminAccessOnly;
+
+				$content -> save();
+
+				Session::flash('message', 'You have successfully created a new content folder called: ' . $name . '.');
+
+				return redirect() -> action('contentController@index');
+			}
+			else {
+
+				Session::flash('message', 'A folder called: ' . $name . ' already exists!');
+				return redirect() -> back();
+			}
+		}
     
-  //   public function edit($id) {
+    public function edit($id) {
 
-  //   	$groups = json_decode(file_get_contents(storage_path() . "/json/groups.json"), true);
-  //   	$user = User::find($id);
-  //   	$userGroups = json_decode($user->groups);
+    	$groups = Group::all();
+    	$content = Content::find($id);
 
-  //   	return View::make('userEdit')
-  //       ->with([
-  //       	'user' => $user,
-  //       	'groups' => $groups,
-  //       	'userGroups' => $userGroups
-  //       ]);
-  //   }
+    	return View::make('contentEdit')
+        ->with([
+        	'content' => $content,
+        	'groups' => $groups
+        ]);
+    }
 
-  //   public function update($id) {
+    public function update($id) {
 
-		// 	$request = RequestInput::all();
-		// 	$user = User::find($id);
+    	$groups = Group::all();
+			$request = RequestInput::all();
+			$content = Content::find($id);
 
-		// 	$rules = [
-		// 		'email' => 'required|email|unique:users,email,'. $id,
-		// 		'groups' => 'required|array',
-		// 	];
+			$rules = [
+				'name' => 'required|unique:contents|min:6|alpha_dash',
+				'editGroups' => 'required|array',
+				'accessGroups' => 'required|array'
+			];
             
-  //     $validator = Validator::make($request, $rules);
+      $validator = Validator::make($request, $rules);
 
-  //     if(array_key_exists('admin', $request)) {
+      if($validator->fails()) {
 
-		//   	$userIsAdmin = true;
-		// 	}
-		// 	else {
-
-		// 	  $userIsAdmin = false;  
-		// 	}
-
-		// 	$email = $request['email'];
-		// 	$groups = json_encode($request['groups']);
-		// 	// $password = bcrypt($request['password']);
-		// 	$admin = $userIsAdmin;
-
-
-  //     if ($validator->fails()) {
-
-  //       return View::make('userEdit')
-  //         ->withErrors($validator)
-  //         ->with([
-  //         	'user' => $user,
-  //         	'request' => $request
-  //         	]);         
+        return View::make('contentEdit')
+          ->withErrors($validator)
+          ->with([
+          	'content' => $content,
+          	'request' => $request,
+          	'groups' => $groups
+          ]);         
           
-  //     } 
-  //     else {
+      } 
+      else {
          
-		// 		$user -> email = $email;
-		// 		$user -> groups = $groups;
-		// 		// $user -> password = $password;
-		// 		$user -> admin = $userIsAdmin;
+        rename(storage_path() . '/' . $content['name'], storage_path() . '/' . $request['name']);
+         
+				if($request['admin_access_only']) {
 
-		// 		$user -> save();
+				  $AdminAccessOnly = true;
+				}
+				else {
 
-  //       Session::flash('message', 'You have successfully updated the information for user: ' . $email);
+				  $AdminAccessOnly = false;  
+				}
 
-  //       return redirect() -> action('userController@index');
-  //     }
-		// }
+				$name = $request['name'];
+				$editGroups = json_encode($request['editGroups']);
+				$accessGroups = json_encode($request['accessGroups']);
 
-  //   public function destroy($id) {
+				$content -> name = $name;
+				$content -> access_groups = $accessGroups;
+				$content -> edit_access_groups = $editGroups;
+				$content -> admin_access_only = $AdminAccessOnly;
 
-  //   	$user = User::find($id);
-  //     $user -> delete();
+				$content -> save();
 
-  //     Session::flash('message', 'You have successfully deleted the user: ' . $user['email']);
+        Session::flash('message', 'You have successfully updated the information for: ' . $content['name']);
 
-  //     return redirect() -> action('userController@index');
-  //   }
+        return redirect() -> action('contentController@index');
+      }
+		}
+
+    public function destroy($id) {
+
+    	$content = Content::find($id);
+      $content -> delete();
+
+      File::deleteDirectory(storage_path() . '/' . $content['name']);
+
+      Session::flash('message', 'You have successfully deleted the folder: ' . $content['name']);
+
+      return redirect() -> action('contentController@index');
+    }
 	}
 ?>

@@ -14,9 +14,9 @@
 
 		public function __construct() {
 
-        $this->middleware('auth', ['except' => ['signIn']]);
+        $this->middleware('auth', ['except' => ['signIn', 'signOut']]);
 
-        $this->middleware('admin', ['except' => ['dashboard', 'signIn', 'update', 'edit']]);
+        $this->middleware('admin', ['except' => ['dashboard', 'signIn', 'update', 'edit', 'signOut']]);
 
         // $this->middleware('before', ['only' => ['destroy']]);
 
@@ -48,8 +48,8 @@
 		public function signOut(Request $request) {
 
 			Auth::logout();
-			Session::forget();
-  		return view('/');
+			Session::flush();
+  		return redirect('/');
   	}
 
 		public function index() {

@@ -18,9 +18,9 @@
 
   	{{ Form::model($group, array('route' => array('group.update', $group->id), 'method' => 'PUT')) }}
 
-      <div class="form-group {{ $errors -> has('email') ? 'has-error' : ''}}">
-        <label for="email"> Enter Email </label>
-        <input id="email" class="form-control" type="text" name="email" value="@if(isset($request)) {{ $request['email'] }} @else {{ $group['email'] }} @endif">
+      <div class="form-group {{ $errors -> has('name') ? 'has-error' : ''}}">
+        <label for="name"> Enter New Name </label>
+        <input id="name" class="form-control" type="text" name="name" value="@if(isset($request)) {{ $request['name'] }} @else {{ $group['name'] }} @endif">
       </div>
 
   		{{ Form::submit('Submit', array('class' => 'btn btn-primary')) }}
