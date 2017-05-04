@@ -5,6 +5,7 @@
 	use Illuminate\Support\Facades\Request as RequestInput;
 	use Illuminate\Support\Facades\Auth;
 	use Illuminate\Support\Facades\File;
+	use Illuminate\Support\Facades\Response;
 	use App\Content;
 	use Session;
 	use View;	
@@ -16,6 +17,7 @@
 		public function __construct() {
 
         $this->middleware('auth');
+        $this->middleware('web');
 
         $this->middleware('admin', ['except' => ['index']]);
 
@@ -31,6 +33,49 @@
       return View::make('contentIndex')
         ->with('contents', $contents);
     }
+
+    public function addAssets($id) {
+
+    	$folderId = $id;
+      return View::make('assetUpload')	-> with('folderId', $folderId);
+    }
+
+    public function uploadAssets($id) {
+   	
+   		$folder = Content::find($id) -> name;
+
+	    if(RequestInput::hasFile('files')) {
+	        
+        $files = RequestInput::file('files');
+
+        foreach ($files as $file) {
+        	
+        	$file->move(storage_path() . '/' . $folder, $file->getClientOriginalName());
+        	echo $file->getClientOriginalName() . 'uploaded!';
+        }
+	    }
+	    else {
+	       echo 'no file, no bueno';
+	    }
+	  }
+
+	  public function serveFiles($folderName, $fileName) {
+	
+	    $path = storage_path() . '/' . $folderName . '/' . $fileName;
+
+	    if(!File::exists($path)) {
+	       
+	      echo 'test';
+	    }
+
+	    $file = File::get($path);
+	    $type = File::mimeType($path);
+
+	    $response = Response::make($file, 200);
+	    $response->header("Content-Type", $type);
+
+	    return $response;
+		}
 
     public function create() {
 
@@ -52,13 +97,13 @@
 
     		File::makeDirectory(storage_path() . '/' . $request['name']);
 
-				if($request['admin_access_only']) {
+				if(!$request['admin_access_only']) {
 
-				  $AdminAccessOnly = true;
+				  $AdminAccessOnly = false;
 				}
 				else {
 
-				  $AdminAccessOnly = false;  
+				  $AdminAccessOnly = true;  
 				}
 
 				$editGroups = json_encode($request['editGroups']);
@@ -102,7 +147,7 @@
 			$content = Content::find($id);
 
 			$rules = [
-				'name' => 'required|unique:contents|min:6|alpha_dash',
+				'name' => 'required|min:6|alpha_dash|unique:contents,name,'. $id,
 				'editGroups' => 'required|array',
 				'accessGroups' => 'required|array'
 			];
@@ -122,20 +167,20 @@
       } 
       else {
          
-        rename(storage_path() . '/' . $content['name'], storage_path() . '/' . $request['name']);
-         
-				if($request['admin_access_only']) {
-
-				  $AdminAccessOnly = true;
+				if(isset($request['admin_access_only'])) {
+					
+					$AdminAccessOnly = true; 
 				}
 				else {
 
-				  $AdminAccessOnly = false;  
+				  $AdminAccessOnly = false;
 				}
 
 				$name = $request['name'];
 				$editGroups = json_encode($request['editGroups']);
 				$accessGroups = json_encode($request['accessGroups']);
+
+				rename(storage_path() . '/' . $content['name'], storage_path() . '/' . $request['name']);
 
 				$content -> name = $name;
 				$content -> access_groups = $accessGroups;

@@ -8,7 +8,7 @@
 
   	</br>
 
-  	@if($errors->has(''))
+  	@if(count($errors) > 0)
   		<ul>
   	   	@foreach ($errors->all() as $error)
   	      <li>{{ $error }}</li>
@@ -26,8 +26,8 @@
       @if (Auth::user()->isAdmin())
         <div class="form-group" style="margin-top: 15px;">
 
-          <label for="admin"> Folder Is Admin Acces Only </label>
-          <input id="admin" type="checkbox" name="admin" @if(isset($request['admin_access_only'])) checked @elseif($content['admin_access_only'] === 1) checked @endif> 
+          <label for="admin_access_only"> Folder Is Admin Acces Only </label>
+          <input id="admin_access_only" type="checkbox" name="admin_access_only" @if(isset($request['admin_access_only'])) checked @elseif($content['admin_access_only'] === 1) checked @endif> 
         </div>
       @endif
 

@@ -3,12 +3,14 @@
 	namespace App\Http\Controllers;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Request as RequestInput;
-	use App\User;
 	use Illuminate\Support\Facades\Auth;
+	use Illuminate\Support\Facades\File;
 	use Session;
 	use View;	
 	use Validator;
 	use App\Group;
+	use App\User;
+	use App\Content;
 
 	class userController extends Controller {	
 
@@ -25,7 +27,37 @@
 
 		public function dashboard() {
 
-			return view('dashboard');
+			$foldersArray = [];
+
+			foreach(json_decode(Auth::user()['groups']) as $group) {
+
+				foreach(Content::all() as $key => $contentFolder) {
+					
+					foreach(json_decode($contentFolder['access_groups']) as $accessGroup) {
+					
+						if($accessGroup === $group) {
+
+							// foreach(json_decode($contentFolder['edit_access_groups']) as $editorGroup) {
+								
+								$folderObj = (object)['folderName' => $contentFolder['name'], 'files' => File::allFiles(storage_path() . '/' . $contentFolder['name'])];
+
+								// if($editorGroup === $group) {
+
+								// 	$folderObj -> ueseHasEditRights = true;
+								// }
+								// else {
+
+								// 	$folderObj -> ueseHasEditRights = false;
+								// }
+
+								array_push($foldersArray, $folderObj);
+							}
+						// }
+					}
+				}
+			}
+
+			return view('dashboard')->with('foldersArray', array_unique($foldersArray, SORT_REGULAR));
 		}
 
 		public function signIn(Request $request) {
@@ -138,7 +170,6 @@
 
 			$email = $request['email'];
 			$groups = json_encode($request['groups']);
-			// $password = bcrypt($request['password']);
 			$admin = $userIsAdmin;
 
 
@@ -156,7 +187,6 @@
          
 				$user -> email = $email;
 				$user -> groups = $groups;
-				// $user -> password = $password;
 				$user -> admin = $userIsAdmin;
 
 				$user -> save();

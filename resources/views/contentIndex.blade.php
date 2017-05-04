@@ -27,7 +27,9 @@
       @if(Auth::user()->isAdmin())
         <li class="list-group-item list-group-item-danger">
 
-        <a class="btn btn-sm btn-info" href="{{ URL::to('content/' . $content->id . '/edit') }}">Edit content</a>
+        <a class="btn btn-sm btn-default" href="{{ URL::to('content/' . $content->id . '/add') }}">Add Content</a>
+
+        <a class="btn btn-sm btn-info" href="{{ URL::to('content/' . $content->id . '/edit') }}">Edit Folder</a>
 
         {{ Form::open(array('url' => 'content/' . $content->id, 'class' => 'delete side-by-side')) }}
             {{ Form::hidden('_method', 'DELETE') }}

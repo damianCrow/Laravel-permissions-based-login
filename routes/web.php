@@ -30,7 +30,11 @@ Route::get('/dashboard', [
 	'uses' => 'userController@dashboard',
 	'as' => 'dashboard'
 ]);
-  
+
+Route::get('/file/{folderName}/{fileName}', 'contentController@serveFiles');
+Route::get('/content/{id}/add', 'contentController@addAssets');
+Route::post('/content/{id}/upload', 'contentController@uploadAssets');
+
 Route::resource('user', 'userController');
 Route::resource('content', 'contentController');
 Route::resource('group', 'groupController');
