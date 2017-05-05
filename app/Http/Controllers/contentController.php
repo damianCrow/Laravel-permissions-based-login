@@ -19,7 +19,7 @@
         $this->middleware('auth');
         $this->middleware('web');
 
-        $this->middleware('admin', ['except' => ['index']]);
+        $this->middleware('admin', ['except' => ['index', 'serveFiles']]);
 
         // $this->middleware('before', ['only' => ['destroy']]);
 
@@ -51,11 +51,16 @@
         foreach ($files as $file) {
         	
         	$file->move(storage_path() . '/' . $folder, $file->getClientOriginalName());
-        	echo $file->getClientOriginalName() . 'uploaded!';
+
+        	Session::flash('message', $file->getClientOriginalName() . ' uploaded successfully!');
         }
+
+        return redirect() -> action('userController@dashboard');
 	    }
 	    else {
-	       echo 'no file, no bueno';
+
+	    	Session::flash('message', 'ERROR! The file was NOT uploaded successfully!');
+	      return redirect() -> back();
 	    }
 	  }
 
@@ -81,6 +86,14 @@
 
     	$groups = Group::all();
     	return view('contentCreate') -> with('groups', $groups);
+    }
+
+    public function deleteFile($folderName, $fileName) {
+
+    	File::delete(storage_path() . '/' . $folderName . '/' . $fileName);
+
+    	Session::flash('message', $fileName . ' deleted successfully!');
+    	return redirect() -> back();
     }
 
     public function store(Request $request) {

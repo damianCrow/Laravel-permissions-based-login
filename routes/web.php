@@ -34,7 +34,11 @@ Route::get('/dashboard', [
 Route::get('/file/{folderName}/{fileName}', 'contentController@serveFiles');
 Route::get('/content/{id}/add', 'contentController@addAssets');
 Route::post('/content/{id}/upload', 'contentController@uploadAssets');
+Route::delete('/delete_file/{folderName}/{fileName}', 'contentController@deleteFile');
 
 Route::resource('user', 'userController');
 Route::resource('content', 'contentController');
 Route::resource('group', 'groupController');
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

@@ -30,7 +30,7 @@
         <input id="password" class="form-control" type="password" name="password" value="{{ Request::old('password')}}">
       </div>
 
-      <div class="input-group col-lg-offset-1 col-lg-3 col-sm-6 {{ $errors -> has('groups') ? 'has-error' : ''}}">
+      <div class="input-group {{ $errors -> has('groups') ? 'has-error' : ''}}">
 
         <label class="block" for="groups[]"> Select Groups </label>
 
