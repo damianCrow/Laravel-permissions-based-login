@@ -31,23 +31,6 @@
         </div>
       @endif
 
-      <div class="input-group {{ $errors -> has('accessGroups') ? 'has-error' : ''}}">
-
-        <label class="block" for="accessGroups[]"> Edit Content Folder Access Groups </label>
-
-        <select id="accessGroups" name="accessGroups[]" class="form-control selectpicker show-tick" value="{{ Request::old('')}}" multiple>
-
-         @if(Auth::user()->isAdmin())
-            @foreach($groups as $group)
-              
-              <option value="{{$group->name}}"> {{$group->name}}</option>
-            @endforeach  
-          @endif
-
-        </select>
-
-      </div>
-
       <div id="editGroupsWrrpper" class="input-group form-group {{ $errors -> has('editGroups') ? 'has-error' : ''}}">
 
         <label class="block" for="editGroups[]"> Select Content Folder Edit Access Groups </label>
@@ -60,6 +43,23 @@
               <option value="{{$group->name}}"> {{$group->name}} </option>
             @endforeach
           @endif
+        </select>
+
+      </div>
+
+      <div id="accessGroupsWrrpper" class="input-group form-group {{ $errors -> has('accessGroups') ? 'has-error' : ''}}">
+
+        <label class="block" for="accessGroups[]"> Edit Content Folder Access Groups </label>
+
+        <select id="accessGroups" name="accessGroups[]" class="form-control selectpicker show-tick" value="{{ Request::old('')}}" multiple>
+
+         @if(Auth::user()->isAdmin())
+            @foreach($groups as $group)
+              
+              <option value="{{$group->name}}"> {{$group->name}}</option>
+            @endforeach  
+          @endif
+
         </select>
 
       </div>
@@ -80,6 +80,11 @@
 
     $('#accessGroups').selectpicker('val', {!! $content->access_groups !!});
     $('#editGroups').selectpicker('val', {!! $content->edit_access_groups !!});
+
+    $('#editGroups').on('changed.bs.select', function(evt) {
+     
+      $('#accessGroups').selectpicker('val', $('#editGroups').val());
+    });
   </script>
 
 @endsection

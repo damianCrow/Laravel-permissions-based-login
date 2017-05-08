@@ -30,11 +30,11 @@
         <input id="admin_access_only" type="checkbox" name="admin_access_only"> 
       </div>
 
-      <div id="accessGroupsWrrpper" class="input-group form-group {{ $errors -> has('accessGroups') ? 'has-error' : ''}}">
+      <div id="editGroupsWrrpper" class="input-group form-group {{ $errors -> has('editGroups') ? 'has-error' : ''}}">
 
-        <label class="block" for="accessGroups[]"> Select Content Folder Access Groups </label>
+        <label class="block" for="editGroups[]"> Select Content Folder Edit Access Groups </label>
 
-        <select id="accessGroups" name="accessGroups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
+        <select id="editGroups" name="editGroups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
 
           @foreach($groups as $group)
             <option value="{{$group->name}}"> {{$group->name}} </option>
@@ -43,11 +43,11 @@
 
       </div>
 
-      <div id="editGroupsWrrpper" class="input-group form-group {{ $errors -> has('editGroups') ? 'has-error' : ''}}">
+      <div id="accessGroupsWrrpper" class="input-group form-group {{ $errors -> has('accessGroups') ? 'has-error' : ''}}">
 
-        <label class="block" for="editGroups[]"> Select Content Folder Edit Access Groups </label>
+        <label class="block" for="accessGroups[]"> Select Content Folder Access Groups </label>
 
-        <select id="editGroups" name="editGroups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
+        <select id="accessGroups" name="accessGroups[]" class="form-control selectpicker" value="{{ Request::old('')}}" multiple>
 
           @foreach($groups as $group)
             <option value="{{$group->name}}"> {{$group->name}} </option>
@@ -75,6 +75,11 @@
         
       //   $('#editGroupsWrrpper, #accessGroupsWrrpper').hide();
       // }
+
+      $('#editGroups').on('changed.bs.select', function(evt) {
+     
+        $('#accessGroups').selectpicker('val', $('#editGroups').val());
+      });
 
       $('#admin_access_only').on('change', function() {
         

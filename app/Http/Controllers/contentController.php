@@ -48,11 +48,11 @@
 	        
         $files = RequestInput::file('files');
 
-        foreach ($files as $file) {
+        foreach($files as $file) {
         	
         	$file->move(storage_path() . '/' . $folder, $file->getClientOriginalName());
 
-        	Session::flash('message', $file->getClientOriginalName() . ' uploaded successfully!');
+        	Session::flash('message', count($files) . ' files were uploaded successfully!');
         }
 
         return redirect() -> action('userController@dashboard');

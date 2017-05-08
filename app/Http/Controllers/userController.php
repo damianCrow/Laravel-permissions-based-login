@@ -50,53 +50,58 @@
 				foreach(json_decode(Auth::user()['groups']) as $group) {
 
 					foreach(Content::all() as $key => $contentFolder) {
-						
-						foreach(json_decode($contentFolder['access_groups']) as $accessGroup) {
 
-							foreach(json_decode($contentFolder['edit_access_groups']) as $editorGroup) {
-									
-								if($accessGroup === $group && $editorGroup === $group) {
+						foreach(json_decode($contentFolder['edit_access_groups']) as $editorGroup) {
+								
+							if($editorGroup === $group) {
 
-									$folderObj = (object)['folderName' => $contentFolder['name'], 'files' => File::allFiles(storage_path() . '/' . $contentFolder['name'])];
+								$folderObj = (object)['folderName' => $contentFolder['name'], 'files' => File::allFiles(storage_path() . '/' . $contentFolder['name'])];
 
-									array_push($foldersEditRightsArray, $folderObj);
-								}
+								array_push($foldersEditRightsArray, $folderObj);
+							}
+							else {
 
-								if($accessGroup === $group && $editorGroup !== $group) {
+								foreach(json_decode($contentFolder['access_groups']) as $accessGroup) {
 
-									$folderObj = (object)['folderName' => $contentFolder['name'], 'files' => File::allFiles(storage_path() . '/' . $contentFolder['name'])];
+									if($accessGroup === $group) {
 
-									array_push($foldersAccesRightsArray, $folderObj);
+										$folderObj = (object)['folderName' => $contentFolder['name'], 'files' => File::allFiles(storage_path() . '/' . $contentFolder['name'])];
+
+										array_push($foldersAccesRightsArray, $folderObj);
+									}
 								}
 							}
 						}
 					}
 				}
 
-				function tester($arr1, $arr2) {	
+				function removeDuplicatObjs($arr1, $arr2) {	
 
 					$GLOBALS['array1'] = $arr1; 
 					$GLOBALS['array2'] = $arr2;
+					$GLOBALS['editAccessFolderNames'] = [];
 
-					$result = array_udiff($GLOBALS['array1'], $GLOBALS['array2'], function($obj_a, $obj_b) {
+					foreach($arr2 as $key => $value) {
+						
+						array_push($GLOBALS['editAccessFolderNames'], $value -> folderName);
+					}
 
-					  if($obj_a->folderName === $obj_b->folderName) {
-					  	
-				   	 	foreach($GLOBALS['array1'] as $key => $value) {
-				   	 
-				   	 		if($value === $obj_a->folderName) {
+					foreach($GLOBALS['array1'] as $key => $folderObj) {
+						
+						for ($i = 0; $i < count($GLOBALS['editAccessFolderNames']); $i++) { 
+							
+							if($folderObj -> folderName === $GLOBALS['editAccessFolderNames'][$i]) {
 
-				   	 			// unset($GLOBALS['array1'][$key]);
-				   	 		}
-				   	 	}
-					  }
-					}); 
+								unset($GLOBALS['array1'][$key]);
+							}
+						}
+					}
 
-					return $result;
+					return $GLOBALS['array1'];
 				}
 
 				return view('dashboard') -> with([
-					'foldersAccesRightsArray' => tester(array_unique($foldersAccesRightsArray, SORT_REGULAR), array_unique($foldersEditRightsArray, SORT_REGULAR)),
+					'foldersAccesRightsArray' => removeDuplicatObjs(array_unique($foldersAccesRightsArray, SORT_REGULAR), array_unique($foldersEditRightsArray, SORT_REGULAR)),
 					'foldersEditRightsArray' => array_unique($foldersEditRightsArray, SORT_REGULAR)
 				]);
 			}
