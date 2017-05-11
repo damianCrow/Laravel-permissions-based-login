@@ -65,6 +65,22 @@
     border-radius: 5px;
   }
 
+  .preview_wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .delete {
+    position: absolute;
+    width: calc(100% - 10px);
+    left: 0;
+    bottom: -50px;
+  }
+
+  .delete img {
+    cursor: pointer;
+  }
+
  </style>
 @endsection
 
@@ -103,7 +119,7 @@
   
   <script type="text/javascript">
     
-    $(function () {
+    $(function() {
       var dropZoneId = "drop-zone";
       var buttonId = "clickHere";
       var mouseOverClass = "mouse-over";
@@ -151,28 +167,48 @@
       document.getElementById(dropZoneId).addEventListener("drop", function (e) {
           $("#" + dropZoneId).removeClass(mouseOverClass);
       }, true);
-  })    
+   })  
+
+   finalFiles = {};  
 
     $('#files').on('change', function() {
 
-      for (var i = 0; i < this.files.length; i++) {
+      var fileNum = this.files.length,
+        initial = 0,
+        counter = 0;
 
-        if(this.files[i].type.substring(0, 6) === 'image/') {
+      $.each(this.files,function(idx,elm) {
+
+        finalFiles[idx] = elm;
+
+        if(elm.type.substring(0, 6) === 'image/') {
 
           var fr = new FileReader();
+
           fr.onload = function(e) {
             
-            $('#thumbs').append('<img class="upload_preview" src="' + e.target.result + '">');
+            $('#thumbs').append('<div class="preview_wrapper"><img class="upload_preview" src="' + e.target.result + '"><span class="delete"><img id="'+ idx +'" onclick="deleteFile(this)" class="icon icons8-Delete" width="18" height="18" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAABFklEQVRIS+2Wuw3CMBCG7xA9I0ALLggFUuiSDWADNiHZhA1gA9MFiYI0hJoNGABxyAJDHAxnIwRN0iX+7757KT4Eh0eOumMEnAFgYMopJ6A0zvZLzg1ygiuksXinIzhPOBgPCkWOCH0iSuN1kZSBMuwliCpTyqOsGLwLhgWtRoKUgyjbWbXcuYYbxvIWPVdOt3MzSwOko3NzxKvKVbiDvg3RYWjY70E6AtfmvircK/unSfobqAr2fbeOt/ro64jT16D7L4gr1cdT5+u4Bn3ck7p0vy8df72ZCuceyVAcEaFFJxjEm13uA5JDEWATtgR0iLOiU7Z9uiYem40PorLtWTYm62ajYIAwRcC2D05lAgTz6lqmfFwAsBpfKlrpshEAAAAASUVORK5CYII="></span></div>');
           }
 
-          fr.readAsDataURL(this.files[i]);
+          fr.readAsDataURL(elm);
         }
         else {
 
-          $('#thumbs').append('<img class="upload_preview" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcST2ouOJo96xUo5qcPhw89GuP-GB8dRPy9bu5KgHb6uxQMi9fv2qA">');
+          $('#thumbs').append('<div class="preview_wrapper"><img class="upload_preview" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcST2ouOJo96xUo5qcPhw89GuP-GB8dRPy9bu5KgHb6uxQMi9fv2qA"><span class="delete"><img id="'+ idx +'" onclick="deleteFile(this)" class="icon icons8-Delete" width="18" height="18" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAABFklEQVRIS+2Wuw3CMBCG7xA9I0ALLggFUuiSDWADNiHZhA1gA9MFiYI0hJoNGABxyAJDHAxnIwRN0iX+7757KT4Eh0eOumMEnAFgYMopJ6A0zvZLzg1ygiuksXinIzhPOBgPCkWOCH0iSuN1kZSBMuwliCpTyqOsGLwLhgWtRoKUgyjbWbXcuYYbxvIWPVdOt3MzSwOko3NzxKvKVbiDvg3RYWjY70E6AtfmvircK/unSfobqAr2fbeOt/ro64jT16D7L4gr1cdT5+u4Bn3ck7p0vy8df72ZCuceyVAcEaFFJxjEm13uA5JDEWATtgR0iLOiU7Z9uiYem40PorLtWTYm62ajYIAwRcC2D05lAgTz6lqmfFwAsBpfKlrpshEAAAAASUVORK5CYII="></span></div>');
         }
-      }
+      });
     });
+
+    function deleteFile(obj) {
+
+      $('#files').val('');
+        var jqObj = $(obj);
+        var container = jqObj.closest('div');
+        var index = obj.id;
+        container.remove(); 
+        delete finalFiles[index];
+        console.log(finalFiles);
+    }
 
   </script>
 

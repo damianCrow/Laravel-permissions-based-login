@@ -42,3 +42,21 @@ Route::resource('group', 'groupController');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::group(['middleware' => ['auth']], function() {
+  
+  Route::get('/oyster', 'oysterController@mainDashboard');
+  Route::get('/oyster/campaign', 'oysterController@campaignDashboard');
+  Route::get('/oyster/expressionengine', 'oysterController@expressionengineDashboard');
+  Route::get('/oyster/brokerage_images', 'oysterController@brokerageImages');
+  Route::get('/oyster/image_size', 'oysterController@imageSize');
+  Route::get('/oyster/editing', 'oysterController@editing');
+  Route::get('/oyster/subscribers', 'oysterController@subscribers');
+  Route::get('/oyster/sending', 'oysterController@sending');
+  Route::get('/oyster/reports', 'oysterController@reports');
+  Route::get('/oyster/content', 'oysterController@content');
+  Route::get('/oyster/create', 'oysterController@create');
+  Route::get('/oyster/campaign_sender', 'oysterController@campaignSender');
+  Route::get('/oyster/snapshot', 'oysterController@snapShot');
+  Route::get('/oyster/login', 'oysterController@login');
+});

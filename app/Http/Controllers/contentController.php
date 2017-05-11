@@ -11,19 +11,17 @@
 	use View;	
 	use App\Group;
 	use Validator;
+	use Intervention\Image\Facades\Image;
 
 	class contentController extends Controller {	
 
 		public function __construct() {
 
-        $this->middleware('auth');
-        $this->middleware('web');
+      // $this->middleware('auth');
 
-        $this->middleware('admin', ['except' => ['index', 'serveFiles']]);
+      // $this->middleware('admin', ['except' => ['index', 'serveFiles']]);
 
-        // $this->middleware('before', ['only' => ['destroy']]);
-
-        // $this->middleware('after', ['except' => ['dashboard', 'signIn', 'index']]);
+      // $this->middleware('protectFiles', ['only' => ['serveFiles']]);
     }
 
 		public function index() {
@@ -49,7 +47,7 @@
         $files = RequestInput::file('files');
 
         foreach($files as $file) {
-        	
+        	print_r($file);
         	$file->move(storage_path() . '/' . $folder, $file->getClientOriginalName());
 
         	Session::flash('message', count($files) . ' files were uploaded successfully!');
@@ -70,7 +68,8 @@
 
 	    if(!File::exists($path)) {
 	       
-	      echo 'test';
+	      Session::flash('message', 'ERROR! File: ' . $fileName . ' was NOT found!');
+	      return redirect() -> back();
 	    }
 
 	    $file = File::get($path);

@@ -16,16 +16,17 @@
 
 		public function __construct() {
 
-        $this->middleware('auth', ['except' => ['signIn', 'signOut']]);
+      $this->middleware('auth', ['except' => ['signIn', 'signOut']]);
 
-        $this->middleware('admin', ['except' => ['dashboard', 'signIn', 'update', 'edit', 'signOut']]);
-
-        // $this->middleware('before', ['only' => ['destroy']]);
-
-        // $this->middleware('after', ['except' => ['dashboard', 'signIn', 'index']]);
+      $this->middleware('admin', ['except' => ['dashboard', 'signIn', 'update', 'edit', 'signOut']]);
     }
 
 		public function dashboard() {
+
+			if(Auth::user()['installation'] === 'oyster') {
+
+				return $this->handleOysterLogin();
+			}
 
 			$foldersAccesRightsArray = [];
 			$foldersEditRightsArray = [];
@@ -107,6 +108,24 @@
 			}
 		}
 
+		public function handleOysterLogin() {
+
+			if(Auth::user()->canAccessRoute(['oyster1'])) {
+
+				return view('oyster.index');
+			}
+
+			if(Auth::user()->canAccessRoute(['oyster2'])) {
+
+				return view('oyster.expressionengine');
+			}
+
+			if(Auth::user()->canAccessRoute(['oyster3'])) {
+
+				return view('oyster.campaignmonitor');
+			}
+		}
+
 		public function signIn(Request $request) {
 
 			$this -> validate($request, [
@@ -172,6 +191,7 @@
 			$user -> groups = $groups;
 			$user -> password = $password;
 			$user -> admin = $userIsAdmin;
+			$user -> installation = env('APP_INSTALLATION');
 
 			$user -> save();
 
